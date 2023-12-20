@@ -69,6 +69,14 @@ function getNewDeck() {
 	});
 }
 
+function checkDeckEmpty(data) {
+	if (data.remaining === 0) {
+		const drawButton = document.getElementById("draw-card");
+		drawButton.style.display = "none"; // Hide the button
+		console.log("Deck is empty.");
+	}
+}
+
 function drawCardFromDeck() {
 	if (!deckId) {
 		console.log("No deck found. Fetching new deck.");
@@ -76,13 +84,19 @@ function drawCardFromDeck() {
 			.then(() =>
 				get(`https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=1`)
 			)
-			.then(() =>
-				get(
+			.then((res) => {
+				checkDeckEmpty(res.data);
+				return get(
 					`https://deckofcardsapi.com/api/deck/${deckId}/shuffle/?remaining=true`
-				)
-			);
+				);
+			});
 	} else {
-		return get(`https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=1`);
+		return get(
+			`https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=1`
+		).then((res) => {
+			checkDeckEmpty(res.data);
+			return res;
+		});
 	}
 }
 
