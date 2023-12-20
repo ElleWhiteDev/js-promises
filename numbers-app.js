@@ -46,7 +46,7 @@ function promptForNumber() {
 
 function displayData(data) {
 	const container = document.getElementById("trivia-info");
-	container.innerHTML = `<p>${data.text}</p>`;
+	container.innerHTML += `<p>${data.text}</p>`;
 }
 
 function runTriviaApp() {
@@ -54,6 +54,15 @@ function runTriviaApp() {
 	getTrivia(number)
 		.then((res) => {
 			displayData(res.data);
+			let fourCardPromises = [];
+			for (let i = 1; i <= 4; i++) {
+				fourCardPromises.push(getTrivia(i));
+			}
+
+			return Promise.all(fourCardPromises);
+		})
+		.then((results) => {
+			results.forEach((res) => displayData(res.data));
 		})
 		.catch((err) => console.log(err));
 }
